@@ -8,4 +8,5 @@ stegit.o: stegit.c
 	$(CC) $(CFLAGS) -c stegit.c
 
 clean:
-	rm -R *.o
+	rm -f stegit
+	rm -f -R *.o
