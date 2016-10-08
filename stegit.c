@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include "stegit.h"
 
 static const char *WORDS[28] = {
@@ -98,7 +99,7 @@ static void start_hide_mode(FILE* fd) {
 	// looking up characters
 	for(int j = 0; j < i; j++) {
 		if((found = lookup_char(str[j])) != -1) {
-			fprintf(fd, WORDS[found]);
+			fprintf(fd, "%s", WORDS[found]);
 		} else {
 			fprintf(stderr, "Error during looking up\n");
 		}
@@ -111,7 +112,6 @@ static void start_find_mode(FILE* fd) {
 	char c;
 	char str[MAX_WORD_LENGTH];
 	int found = 0;
-	int f_count = 0;
 	do {
 		// building a word
 		int i = 0;
