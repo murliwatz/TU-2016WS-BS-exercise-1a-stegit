@@ -1,3 +1,9 @@
+/**
+ * @brief header file for the implementation of stegit
+ * @author Paul Pröll, 1525669
+ * @date 2016-10-08
+*/
+
 #ifndef STEGIT_H_
 #define STEGIT_H_
 
