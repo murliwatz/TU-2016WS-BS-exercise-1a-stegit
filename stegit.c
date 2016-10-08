@@ -1,57 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "stegit.h"
 
-const char *words[28] = {
-		"das", // a
-		"Gut", // b
-		"ist", // c
-		"und", // d
-		"ich", // e
-		"finde", // f
-		"gehe", // g
-		"heute", // h
-		"toll", // i
-		"genial", // j
-		"man", // k
-		"denke", // l
-		"richtig", // m
-		"nett", // n
-		"satt", // o
-		"der", // p
-		"Qualle", // q
-		"cool", // r
-		"Himmel", // s
-		"klar", // t
-		"unten", // u
-		"Vogel", // v
-		"will", // w
-		"rein", // x
-		"gehen", // y
-		"Zweck", // z
-		"la", // .
-		"freundlich" // <space> 
-};
-
-enum {
-	FIND_MODE,
-	HIDE_MODE
-} mode;
-
-int output = 0;
-char ofile[128];
-
+// lookup a word that have to be in the words array
+// returns the associated index of the words array
+// returns -1 if word can't be found in the array
 int lookup_word(char *word) {
 	int i = 0;
 	for(; i < 28; i++) {
 		if(strcmp(word, words[i]) == 0) break;
 	}
-	if(i >= 0 && i < 26) return i+97;
-	if(i == 26) return '.';
-	if(i == 27) return ' ';
-	return -1;
+	switch(i) {
+		case 26:
+			return '.';
+		case 27:
+			return ' ';
+		default:
+			if(i >= 0 && i < 26) {
+				return i + 97;
+			} else {
+				return -1;
+			}
+	}
 }
 
+// lookup a character for hide mode
+// returns the index of words array
+// returns -1 if character not found
 int lookup_char(char c) {
 	switch(c) {
 		case '.':
@@ -67,6 +43,7 @@ int lookup_char(char c) {
 	}
 }
 
+// the start mode procedere
 void start_hide_mode(FILE* fd) {
 	char c;
 	char str[256];
@@ -83,6 +60,7 @@ void start_hide_mode(FILE* fd) {
 	}
 }
 
+// the find mode procedere
 void start_find_mode(FILE* fd) {
 	char c;
 	char str[256];
@@ -101,6 +79,7 @@ void start_find_mode(FILE* fd) {
 	fprintf(fd, found);
 }
 
+// prints the synopsis
 void print_usage() {
 	fprintf(stderr, "Usage: stegit -f|-h [-o outputfile]\n");
 }
@@ -108,6 +87,7 @@ void print_usage() {
 int main(int argc, char** argv) {
 	int opt;
 
+	// collect all command line arguments
 	if(argc == 1) {
 		print_usage();
 		return EXIT_FAILURE;
@@ -130,6 +110,8 @@ int main(int argc, char** argv) {
 		}
 	}
 	FILE* fd;
+	// if output file should be created, set file descriptor to file
+	// otherwise the text will be printed to the standard output
 	if(output == 1) {
 		fd = fopen(ofile, "w");
 	} else {
