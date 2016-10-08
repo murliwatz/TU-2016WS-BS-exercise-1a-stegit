@@ -46,7 +46,7 @@ static enum {
 	HIDE_MODE
 } mode;
 
-static int output = 0; // for output file generation (0 = no file, 1 = create file)
+static int output = 0; // for output file (0 = no file, 1 = create file)
 static char ofile[128]; // name of output file
 
 static int lookup_word(char *word) {
