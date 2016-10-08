@@ -43,6 +43,6 @@ static void start_hide_mode(FILE* fd);
 /**
  * @brief Prints synopsis on stderr
  */
-static void print_usage();
+static void print_usage(char* progname);
 
 #endif
