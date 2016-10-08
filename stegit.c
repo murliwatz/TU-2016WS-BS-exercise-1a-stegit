@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include "stegit.h"
 
-// lookup a word that have to be in the words array
+// looks up a word that has to be in the words array
 // returns the associated index of the words array
 // returns -1 if word can't be found in the array
 int lookup_word(char *word) {
@@ -25,7 +25,7 @@ int lookup_word(char *word) {
 	}
 }
 
-// lookup a character for hide mode
+// looks up a character for hide mode
 // returns the index of words array
 // returns -1 if character not found
 int lookup_char(char c) {
