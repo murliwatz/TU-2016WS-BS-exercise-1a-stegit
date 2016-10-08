@@ -3,10 +3,47 @@
 #include <unistd.h>
 #include "stegit.h"
 
-// looks up a word that has to be in the words array
-// returns the associated index of the words array
-// returns -1 if word can't be found in the array
-int lookup_word(char *word) {
+static const char *words[28] = {
+		"das", // a
+		"Gut", // b
+		"ist", // c
+		"und", // d
+		"ich", // e
+		"finde", // f
+		"gehe", // g
+		"heute", // h
+		"toll", // i
+		"genial", // j
+		"man", // k
+		"denke", // l
+		"richtig", // m
+		"nett", // n
+		"satt", // o
+		"der", // p
+		"Qualle", // q
+		"cool", // r
+		"Himmel", // s
+		"klar", // t
+		"unten", // u
+		"Vogel", // v
+		"will", // w
+		"rein", // x
+		"gehen", // y
+		"Zweck", // z
+		"la", // .
+		"freundlich" // <space> 
+};
+
+// program mode
+static enum {
+	FIND_MODE,
+	HIDE_MODE
+} mode;
+
+static int output = 0; // for output file generation (0 = no file, 1 = create file)
+static char ofile[128]; // name of output file
+
+static int lookup_word(char *word) {
 	int i = 0;
 	for(; i < 28; i++) {
 		if(strcmp(word, words[i]) == 0) break;
@@ -25,10 +62,7 @@ int lookup_word(char *word) {
 	}
 }
 
-// looks up a character for hide mode
-// returns the index of words array
-// returns -1 if character not found
-int lookup_char(char c) {
+static int lookup_char(char c) {
 	switch(c) {
 		case '.':
 			return 26;
@@ -43,44 +77,55 @@ int lookup_char(char c) {
 	}
 }
 
-// the start mode procedere
-void start_hide_mode(FILE* fd) {
+static void start_hide_mode(FILE* fd) {
 	char c;
-	char str[256];
+	int found = 0;
+	char str[MAX_INPUT_LENGTH];
+	// read until end of file or enter is pressed
 	int i = 0;
 	while((c = getchar()) != EOF && c != '\n') {
 		str[i] = c;
 		i++;
 	}
 	str[i] = '\0';
+
+	// looking up characters
 	for(int j = 0; j < i; j++) {
-		int x = lookup_char(str[j]);
-		fprintf(fd, words[x]);
+		if((found = lookup_char(str[j])) != -1) {
+			fprintf(fd, words[found]);
+		} else {
+			fprintf(stderr, "Error during looking up\n");
+		}
+		// if not the last word, print <space>
 		if(j < i-1) fprintf(fd, " "); 
 	}
 }
 
-// the find mode procedere
-void start_find_mode(FILE* fd) {
+static void start_find_mode(FILE* fd) {
 	char c;
-	char str[256];
-	char found[256];
+	char str[MAX_WORD_LENGTH];
+	int found = 0;
 	int f_count = 0;
 	do {
+		// building a word
 		int i = 0;
-        	while((c = getchar()) != EOF && c != ' ') {
-                	str[i] = c;
-                	i++;
-        	}
+        while((c = getchar()) != EOF && c != ' ') {
+        	str[i] = c;
+        	i++;
+        }
 		str[i] = '\0';
-		found[f_count++] = lookup_word(str);
+
+		// looking up word
+		if((found = lookup_word(str)) != -1) {
+			fprintf(fd, "%c", (char)found);
+		} else {
+			fprintf(stderr, "Error during looking up\n");
+
+		}
 	} while(c == ' ' && c != EOF);
-	found[f_count] = '\0';
-	fprintf(fd, found);
 }
 
-// prints the synopsis
-void print_usage() {
+static void print_usage() {
 	fprintf(stderr, "Usage: stegit -f|-h [-o outputfile]\n");
 }
 
