@@ -67,11 +67,13 @@ int main(int argc, char** argv) {
 	} else {
 		fd = stdout;
 	}
+
 	if(mode == FIND_MODE) {
 		(void) start_find_mode(fd);
 	} else if (mode == HIDE_MODE) {
 		(void) start_hide_mode(fd);
 	}
+
 	exit(EXIT_SUCCESS);	
 }
 
@@ -102,7 +104,7 @@ static int lookup_char(char c) {
 			return 27;
 		default:
 			if(c > 96 && c < 96 + 26) {
-				return c-97;
+				return c - 97;
 			} else {
 				return -1;
 			}
@@ -113,6 +115,7 @@ static void start_hide_mode(FILE* fd) {
 	char c;
 	int found = 0;
 	char str[MAX_INPUT_LENGTH];
+
 	// read until end of file or enter is pressed
 	int i = 0;
 	while((c = getchar()) != EOF && c != '\n') {
@@ -126,10 +129,12 @@ static void start_hide_mode(FILE* fd) {
 		if((found = lookup_char(str[j])) != -1) {
 			(void) fprintf(fd, "%s", WORDS[found]);
 		} else {
-			(void) print_lookup_error();
+			print_lookup_error();
 		}
 		// if not the last word, print <space>
-		if(j < i-1) fprintf(fd, " "); 
+		if(j < i-1) {
+			(void) fprintf(fd, " "); 
+		} 
 	}
 }
 
@@ -150,20 +155,20 @@ static void start_find_mode(FILE* fd) {
 		if((found = lookup_word(str)) != -1) {
 			(void) fprintf(fd, "%c", (char)found);
 		} else {
-			(void) print_lookup_error();
+			print_lookup_error();
 		}
 	} while(c == ' ' && c != EOF);
 }
 
 static void print_usage(void) {
 	(void) fprintf(stderr, "%s: Usage: stegit -f|-h [-o outputfile]\n", progname);
-	(void) free_resources();
+	free_resources();
 	exit(EXIT_FAILURE);	
 }
 
 static void print_lookup_error(void) {
 	(void) fprintf(stderr, "%s: Error during looking up\n", progname);
-	(void) free_resources();
+	free_resources();
 	exit(EXIT_FAILURE);	
 }
 
@@ -174,7 +179,7 @@ static void parse_args(int argc, char** argv) {
 		progname = argv[0];
 	}
 	if(argc != 2 && argc != 4) {
-		(void) print_usage();
+		print_usage();
 	}
 	while((opt = getopt(argc, argv, "fho:")) != -1) {
 		switch(opt) {
@@ -189,7 +194,7 @@ static void parse_args(int argc, char** argv) {
 				strcpy(ofile,optarg);
 				break;
 			default:
-				(void) print_usage();		
+				print_usage();		
 		}
 	}
 }
