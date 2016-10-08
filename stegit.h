@@ -41,8 +41,25 @@ static void start_find_mode(FILE* fd);
 static void start_hide_mode(FILE* fd);
 
 /**
- * @brief Prints synopsis on stderr
+ * @brief Prints synopsis on stderr and exits with EXIT_FAILURE
  */
-static void print_usage(char* progname);
+static void print_usage(void);
+
+/**
+ * @brief Prints lookup error on stderr and exits with EXIT_FAILURE
+ */
+static void print_lookup_error(void);
+
+/**
+ * @brief Parses the program arguments
+ * @param argc Count of arguments
+ * @param argv Array of arguments
+ */
+ static void parse_args(int argc, char** argv);
+
+/**
+ *  @brief Free allocated resources
+ */
+ static void free_resources(void);
 
 #endif

@@ -47,8 +47,33 @@ static enum {
 	HIDE_MODE
 } mode;
 
+static char* progname;
+
 static int output = 0; // for output file (0 = no file, 1 = create file)
 static char ofile[128]; // name of output file
+static FILE* fd; // file descriptor of output file
+
+
+/* === Implementations === */
+
+int main(int argc, char** argv) {
+
+	parse_args(argc, argv);
+
+	// if output file should be created, set file descriptor to file
+	// otherwise the text will be printed to the standard output
+	if(output == 1) {
+		fd = fopen(ofile, "w");
+	} else {
+		fd = stdout;
+	}
+	if(mode == FIND_MODE) {
+		(void) start_find_mode(fd);
+	} else if (mode == HIDE_MODE) {
+		(void) start_hide_mode(fd);
+	}
+	exit(EXIT_SUCCESS);	
+}
 
 static int lookup_word(char *word) {
 	int i = 0;
@@ -101,7 +126,7 @@ static void start_hide_mode(FILE* fd) {
 		if((found = lookup_char(str[j])) != -1) {
 			fprintf(fd, "%s", WORDS[found]);
 		} else {
-			fprintf(stderr, "Error during looking up\n");
+			(void) print_lookup_error();
 		}
 		// if not the last word, print <space>
 		if(j < i-1) fprintf(fd, " "); 
@@ -125,23 +150,31 @@ static void start_find_mode(FILE* fd) {
 		if((found = lookup_word(str)) != -1) {
 			fprintf(fd, "%c", (char)found);
 		} else {
-			fprintf(stderr, "Error during looking up\n");
-
+			(void) print_lookup_error();
 		}
 	} while(c == ' ' && c != EOF);
 }
 
-static void print_usage(char* progname) {
-	fprintf(stderr, "%s: Usage: stegit -f|-h [-o outputfile]\n", progname);
+static void print_usage(void) {
+	(void) fprintf(stderr, "%s: Usage: stegit -f|-h [-o outputfile]\n", progname);
+	(void) free_resources();
+	exit(EXIT_FAILURE);	
 }
 
-int main(int argc, char** argv) {
+static void print_lookup_error(void) {
+	(void) fprintf(stderr, "%s: Error during looking up\n", progname);
+	(void) free_resources();
+	exit(EXIT_FAILURE);	
+}
+
+static void parse_args(int argc, char** argv) {
 	int opt;
 
-	// parse all command line arguments
-	if(argc == 1) {
-		print_usage(argv[0]);
-		return EXIT_FAILURE;
+	if(argc > 0) {
+		progname = argv[0];
+	}
+	if(argc != 2 && argc != 4) {
+		(void) print_usage();
 	}
 	while((opt = getopt(argc, argv, "fho:")) != -1) {
 		switch(opt) {
@@ -156,20 +189,13 @@ int main(int argc, char** argv) {
 				strcpy(ofile,optarg);
 				break;
 			default:
-				print_usage(argv[0]);
-				return EXIT_FAILURE;				
+				(void) print_usage();		
 		}
 	}
-	FILE* fd;
-	// if output file should be created, set file descriptor to file
-	// otherwise the text will be printed to the standard output
-	if(output == 1) {
-		fd = fopen(ofile, "w");
-	} else {
-		fd = stdout;
+}
+
+static void free_resources(void) {
+	if(fd != NULL) {
+		(void) fclose(fd);
 	}
-	if(mode == FIND_MODE) start_find_mode(fd);
-	if(mode == HIDE_MODE) start_hide_mode(fd);
-	if(output == 1) fclose(fd);
-	return EXIT_SUCCESS;	
 }
