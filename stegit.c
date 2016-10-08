@@ -124,7 +124,7 @@ static void start_hide_mode(FILE* fd) {
 	// looking up characters
 	for(int j = 0; j < i; j++) {
 		if((found = lookup_char(str[j])) != -1) {
-			fprintf(fd, "%s", WORDS[found]);
+			(void) fprintf(fd, "%s", WORDS[found]);
 		} else {
 			(void) print_lookup_error();
 		}
@@ -148,7 +148,7 @@ static void start_find_mode(FILE* fd) {
 
 		// looking up word
 		if((found = lookup_word(str)) != -1) {
-			fprintf(fd, "%c", (char)found);
+			(void) fprintf(fd, "%c", (char)found);
 		} else {
 			(void) print_lookup_error();
 		}
