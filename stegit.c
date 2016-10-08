@@ -1,9 +1,15 @@
+/**
+ * @brief main c file for the implementation of stegit
+ * @author Paul Pröll, 1525669
+ * @date 2016-10-08
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "stegit.h"
 
-static const char *words[28] = {
+static const char *WORDS[28] = {
 		"das", // a
 		"Gut", // b
 		"ist", // c
@@ -46,7 +52,7 @@ static char ofile[128]; // name of output file
 static int lookup_word(char *word) {
 	int i = 0;
 	for(; i < 28; i++) {
-		if(strcmp(word, words[i]) == 0) break;
+		if(strcmp(word, WORDS[i]) == 0) break;
 	}
 	switch(i) {
 		case 26:
@@ -92,7 +98,7 @@ static void start_hide_mode(FILE* fd) {
 	// looking up characters
 	for(int j = 0; j < i; j++) {
 		if((found = lookup_char(str[j])) != -1) {
-			fprintf(fd, words[found]);
+			fprintf(fd, WORDS[found]);
 		} else {
 			fprintf(stderr, "Error during looking up\n");
 		}
@@ -125,8 +131,8 @@ static void start_find_mode(FILE* fd) {
 	} while(c == ' ' && c != EOF);
 }
 
-static void print_usage() {
-	fprintf(stderr, "Usage: stegit -f|-h [-o outputfile]\n");
+static void print_usage(char* progname) {
+	fprintf(stderr, "%s: Usage: stegit -f|-h [-o outputfile]\n", progname);
 }
 
 int main(int argc, char** argv) {
@@ -134,7 +140,7 @@ int main(int argc, char** argv) {
 
 	// parse all command line arguments
 	if(argc == 1) {
-		print_usage();
+		print_usage(argv[0]);
 		return EXIT_FAILURE;
 	}
 	while((opt = getopt(argc, argv, "fho:")) != -1) {
@@ -150,7 +156,7 @@ int main(int argc, char** argv) {
 				strcpy(ofile,optarg);
 				break;
 			default:
-				print_usage();
+				print_usage(argv[0]);
 				return EXIT_FAILURE;				
 		}
 	}
