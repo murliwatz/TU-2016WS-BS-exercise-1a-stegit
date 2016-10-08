@@ -1,5 +1,5 @@
 # TU-2016WS-BS-exercise-1a-stegit
-an exercice for Betriebsysteme WS2016 
+an exercise for Betriebsysteme WS2016 
 
 ## What it does
 stegit makes a text secret vice versa
