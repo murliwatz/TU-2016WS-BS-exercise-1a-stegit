@@ -132,7 +132,7 @@ static void print_usage() {
 int main(int argc, char** argv) {
 	int opt;
 
-	// collect all command line arguments
+	// parse all command line arguments
 	if(argc == 1) {
 		print_usage();
 		return EXIT_FAILURE;
