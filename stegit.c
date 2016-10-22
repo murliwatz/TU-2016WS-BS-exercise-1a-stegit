@@ -131,7 +131,7 @@ static void start_hide_mode(FILE* fd) {
 		if((found = lookup_char(str[j])) != -1) {
 			(void) fprintf(fd, "%s", WORDS[found]);
 		} else {
-			bail_out(EXIT_FAILURE, "Error during looking up\n");
+			bail_out(EXIT_FAILURE, "Error during looking up");
 		}
 		// if not the last word, print <space>
 		if(j < i-1) {
@@ -157,7 +157,7 @@ static void start_find_mode(FILE* fd) {
 		if((found = lookup_word(str)) != -1) {
 			(void) fprintf(fd, "%c", (char)found);
 		} else {
-			bail_out(EXIT_FAILURE, "Error during looking up\n");
+			bail_out(EXIT_FAILURE, "Error during looking up");
 		}
 	} while(c == ' ' && c != EOF);
 }
@@ -188,7 +188,7 @@ static void parse_args(int argc, char** argv) {
 		progname = argv[0];
 	}
 	if(argc != 2 && argc != 4) {
-		bail_out(EXIT_FAILURE, "Usage: stegit -f|-h [-o outputfile]\n");
+		bail_out(EXIT_FAILURE, "Usage: stegit -f|-h [-o outputfile]");
 	}
 	while((opt = getopt(argc, argv, "fho:")) != -1) {
 		switch(opt) {
@@ -203,7 +203,7 @@ static void parse_args(int argc, char** argv) {
 				strcpy(ofile,optarg);
 				break;
 			default:
-				bail_out(EXIT_FAILURE, "Usage: stegit -f|-h [-o outputfile]\n");		
+				bail_out(EXIT_FAILURE, "Usage: stegit -f|-h [-o outputfile]");		
 		}
 	}
 }
