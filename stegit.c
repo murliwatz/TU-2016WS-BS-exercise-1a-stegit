@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
+#include <stdarg.h>
 #include "stegit.h"
 
 static const char *WORDS[28] = {
@@ -129,7 +131,7 @@ static void start_hide_mode(FILE* fd) {
 		if((found = lookup_char(str[j])) != -1) {
 			(void) fprintf(fd, "%s", WORDS[found]);
 		} else {
-			print_lookup_error();
+			bail_out(EXIT_FAILURE, "Error during looking up\n");
 		}
 		// if not the last word, print <space>
 		if(j < i-1) {
@@ -155,21 +157,28 @@ static void start_find_mode(FILE* fd) {
 		if((found = lookup_word(str)) != -1) {
 			(void) fprintf(fd, "%c", (char)found);
 		} else {
-			print_lookup_error();
+			bail_out(EXIT_FAILURE, "Error during looking up\n");
 		}
 	} while(c == ' ' && c != EOF);
 }
 
-static void print_usage(void) {
-	(void) fprintf(stderr, "%s: Usage: stegit -f|-h [-o outputfile]\n", progname);
-	free_resources();
-	exit(EXIT_FAILURE);	
-}
+static void bail_out(int exitcode, const char *fmt, ...)
+{
+    va_list ap;
 
-static void print_lookup_error(void) {
-	(void) fprintf(stderr, "%s: Error during looking up\n", progname);
-	free_resources();
-	exit(EXIT_FAILURE);	
+    (void) fprintf(stderr, "%s: ", progname);
+    if (fmt != NULL) {
+        va_start(ap, fmt);
+        (void) vfprintf(stderr, fmt, ap);
+        va_end(ap);
+    }
+    if (errno != 0) {
+        (void) fprintf(stderr, ": %s", strerror(errno));
+    }
+    (void) fprintf(stderr, "\n");
+
+    free_resources();
+    exit(exitcode);
 }
 
 static void parse_args(int argc, char** argv) {
@@ -179,7 +188,7 @@ static void parse_args(int argc, char** argv) {
 		progname = argv[0];
 	}
 	if(argc != 2 && argc != 4) {
-		print_usage();
+		bail_out(EXIT_FAILURE, "Usage: stegit -f|-h [-o outputfile]\n");
 	}
 	while((opt = getopt(argc, argv, "fho:")) != -1) {
 		switch(opt) {
@@ -194,7 +203,7 @@ static void parse_args(int argc, char** argv) {
 				strcpy(ofile,optarg);
 				break;
 			default:
-				print_usage();		
+				bail_out(EXIT_FAILURE, "Usage: stegit -f|-h [-o outputfile]\n");		
 		}
 	}
 }

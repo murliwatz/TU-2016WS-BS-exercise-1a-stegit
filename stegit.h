@@ -40,15 +40,12 @@ static void start_find_mode(FILE* fd);
  */
 static void start_hide_mode(FILE* fd);
 
-/**
- * @brief Prints synopsis on stderr and exits with EXIT_FAILURE
+/*
+ * @brief Prints fmt on stderr, free resources and closes program with exitcode
+ * @param exitcode Exitcode that should be returned for termination of process
+ * @param fmt String to print out
  */
-static void print_usage(void);
-
-/**
- * @brief Prints lookup error on stderr and exits with EXIT_FAILURE
- */
-static void print_lookup_error(void);
+static void bail_out(int exitcode, const char *fmt, ...);
 
 /**
  * @brief Parses the program arguments
